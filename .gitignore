@@ -1,2 +1,6 @@
 .idea
 .vscode
+sample-jvm-app/.gradle
+sample-jvm-app/.idea
+sample-jvm-app/out
+
