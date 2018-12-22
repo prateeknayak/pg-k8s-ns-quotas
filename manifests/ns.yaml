@@ -1,0 +1,39 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: quotas
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: no-quotas
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: sample-quotas
+  namespace: quotas
+spec:
+  hard:
+    pods: "4"
+    requests.cpu: "1"
+    requests.memory: 1Gi
+    limits.cpu: "2"
+    limits.memory: 2Gi
+
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: sample-limits
+  namespace: quotas
+spec:
+  limits:
+  - default:
+      cpu: 200m
+      memory: 512Mi
+    defaultRequest:
+      cpu: 100m
+      memory: 256Mi
+    type: Container
