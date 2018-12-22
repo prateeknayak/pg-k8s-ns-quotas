@@ -1,23 +1,21 @@
-FROM golang:alpine AS build_base
+FROM gradle:alpine
 
-RUN apk update --no-cache && apk add git
 WORKDIR /app
 
-ENV GO111MODULE=on
+COPY ./ /app/
 
-COPY go.mod .
-COPY go.sum .
+USER root
 
-RUN go mod download
+RUN gradle build
 
-ADD ./ /app
 
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-w -extldflags "-static"' -o grafana-loki-test  .
+FROM openjdk:8-alpine
 
-FROM alpine
 WORKDIR /app
-COPY --from=build_base /app/grafana-loki-test /app
 
-ENTRYPOINT ["/app/grafana-loki-test"]
+COPY bin/start.sh /app/start.sh
+COPY --from=0 /app/build/libs/helloworld-jvm-*.jar /app
 
-EXPOSE 8000
+ENTRYPOINT ["/app/start.sh"]
+
+EXPOSE 8080
